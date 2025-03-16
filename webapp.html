@@ -7,13 +7,30 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <h1>Welcome to My Telegram Web App</h1>
+    <h2>Welcome to Web App</h2>
+    <p id="user-info">Loading...</p>
     <button onclick="sendMessage()">Send Message to Bot</button>
 
     <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let user = tg.initDataUnsafe.user;
+        document.getElementById("user-info").innerText = `Hello, ${user.first_name}`;
+
         function sendMessage() {
-            let user = Telegram.WebApp.initDataUnsafe.user;
-            alert("Hello, " + user.first_name);
+            fetch("https://your-server.com/webapp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: user.id,
+                    first_name: user.first_name
+                })
+            }).then(response => response.json())
+            .then(data => alert("Message sent: " + data.status))
+            .catch(error => console.error("Error:", error));
         }
     </script>
 </body>
